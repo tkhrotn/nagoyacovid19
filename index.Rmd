@@ -1,0 +1,286 @@
+---
+title: "名古屋市COVID19情報（非公式）"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: row
+    vertical_layout: fill
+---
+
+```{r setup, include=FALSE}
+library(flexdashboard)
+library(readr)
+library(plotly)
+nagoya_city_covid19 <- read_csv("data/nagoya/nagoya_city_covid19(20200806).csv", 
+    locale = locale(encoding = "SHIFT-JIS"))
+nagoya_city_covid19$日付 <- as.Date(nagoya_city_covid19$日付)
+nagoya_city_covid19 <- nagoya_city_covid19[nrow(nagoya_city_covid19):1,]
+colnames(nagoya_city_covid19) <- c("日付", "新規陽性患者数", "感染経路判明", "感染経路不明", "退院回復者数", "死亡者数", "検査実施人数")
+
+nagoya <- read_csv("data/nagoya.csv")
+nagoya$発症日 <- as.Date(nagoya$発症日)
+nagoya$陽性確定日 <- as.Date(nagoya$陽性確定日)
+nagoya$発表日 <- as.Date(nagoya$発表日)
+
+days <- seq(as.Date("2020-2-1"), as.Date("2020-8-6"), by = "day")
+publication <- data.frame(日付 = days)
+publication <- merge(publication, nagoya_city_covid19, by = "日付", all = TRUE)
+publication[is.na(publication)] <- 0
+publication$陽性率 <- publication$新規陽性患者数 / publication$検査実施人数
+publication$陽性率[is.nan(publication$陽性率)] <- 0
+publication$累計_新規陽性患者数 <- cumsum(publication$新規陽性患者数)
+publication$累計_退院回復者数 <- cumsum(publication$退院回復者数)
+publication$累計_死亡数 <- cumsum(publication$死亡者数)
+publication$入院入所者数 <- publication$累計_新規陽性患者数 - publication$累計_退院回復者数 - publication$累計_死亡数
+publication$移動平均_新規陽性患者数 <- stats::filter(publication$新規陽性患者数, c(1,1,1,1,1,1,1), sides = 1) / 7
+publication$移動平均_退院回復者数 <- stats::filter(publication$退院回復者数, c(1,1,1,1,1,1,1), sides = 1) / 7
+publication$移動平均_検査実施人数 <- stats::filter(publication$検査実施人数, c(1,1,1,1,1,1,1), sides = 1) / 7
+publication$移動平均_入院入所者数 <- stats::filter(publication$入院入所者数, c(1,1,1,1,1,1,1), sides = 1) / 7
+publication$移動平均_陽性率 <- stats::filter(publication$陽性率, c(1,1,1,1,1,1,1), sides = 1) / 7
+publication[is.na(publication)] <- 0
+
+count <- numeric()
+for (d in days) {
+  count <- c(count, sum(nagoya$陽性確定日 == d))
+}
+publication$陽性確定日ベース新規患者数 <- count
+publication$移動平均_陽性確定日ベース新規患者数 <- stats::filter(publication$陽性確定日ベース新規患者数, c(1,1,1,1,1,1,1), sides = 1) / 7
+
+count <- numeric()
+for (d in days) {
+  count <- c(count, sum(nagoya$発症日 == d, na.rm = T))
+}
+publication$発症日ベース新規患者数 <- count
+publication$移動平均_発症日ベース新規患者数 <- stats::filter(publication$発症日ベース新規患者数, c(1,1,1,1,1,1,1), sides = 1) / 7
+publication[is.na(publication)] <- 0
+```
+
+名古屋市の状況
+=====================================
+
+Column
+--------------------------------------------------------------------------------
+
+### 陽性患者累計 {data-width=25%}
+
+```{r}
+total <- sum(nagoya_city_covid19$新規陽性患者数)
+valueBox(total, color = "danger")
+```
+
+### 入院・入所中（調整中含む） {data-width=25%}
+
+```{r}
+current <- sum(nagoya_city_covid19$新規陽性患者数)-sum(nagoya_city_covid19$退院回復者数)-sum(nagoya_city_covid19$死亡者数)
+valueBox(current, color = "primary")
+```
+
+### 退院・回復者 {data-width=25%}
+
+```{r}
+recovered <- sum(nagoya_city_covid19$退院回復者数)
+valueBox(recovered, color = "success")
+```
+
+### 死亡者 {data-width=25%}
+
+```{r}
+death <- sum(nagoya_city_covid19$死亡者数)
+valueBox(death, color = "gray")
+```
+
+Column
+--------------------------------------------------------------------------------
+
+### 新規陽性患者数（公表日に基づく）
+
+```{r}
+ggplotly(ggplot(publication, aes(x = 日付, y = 新規陽性患者数, colour = "陽性患者数"))
+         + geom_bar(stat = "identity", fill = "orange")
+         + scale_x_date(date_breaks = "1 months", date_labels = "%B")
+         + geom_line(mapping = aes(x = 日付, y = 移動平均_新規陽性患者数, colour = "移動平均（過去7日間）"))
+         + scale_color_manual(name = "", values = c("移動平均（過去7日間）" = gray(0, 0.4), 陽性患者数="#FFFFFF00"))
+         + theme(legend.position="top")
+         + labs(x = NULL, y = NULL)) %>% layout(legend = list(orientation = "v", x = 0, y = 1))
+```
+
+### 退院・回復者数
+
+```{r}
+ggplotly(ggplot(publication, aes(x = 日付, y = 退院回復者数, colour = "退院・回復者数"))
+         + geom_bar(stat = "identity", fill = "orange")
+         + scale_x_date(date_breaks = "1 months", date_labels = "%B")
+         + geom_line(mapping = aes(x = 日付, y = 移動平均_退院回復者数, colour = "移動平均（過去7日間）"))
+         + scale_color_manual(name = "", values = c("移動平均（過去7日間）" = gray(0, 0.4), "退院・回復者数"="#FFFFFF00"))
+         + theme(legend.position="top")
+         + labs(x = NULL, y = NULL)) %>% layout(legend = list(orientation = "v", x = 0, y = 1))
+```
+
+
+Column
+--------------------------------------------------------------------------------
+
+### 検査実施人数
+
+```{r}
+ggplotly(ggplot(publication, aes(x = 日付, y = 検査実施人数, colour = "検査実施人数"))
+         + geom_bar(stat = "identity", fill = "orange")
+         + scale_x_date(date_breaks = "1 months", date_labels = "%B")
+         + geom_line(mapping = aes(x = 日付, y = 移動平均_検査実施人数, colour = "移動平均（過去7日間）"))
+         + scale_color_manual(name = "", values = c("移動平均（過去7日間）" = gray(0, 0.4), "検査実施人数"="#FFFFFF00"))
+         + theme(legend.position="top")
+         + labs(x = NULL, y = NULL)) %>% layout(legend = list(orientation = "v", x = 0, y = 1))
+```
+
+
+### 検査陽性率
+
+```{r}
+ggplotly(ggplot(publication, aes(x = 日付, y = 陽性率, colour = "検査陽性率"))
+         + geom_bar(stat = "identity", fill = "orange")
+         + scale_x_date(date_breaks = "1 months", date_labels = "%B")
+         + geom_line(mapping = aes(x = 日付, y = 移動平均_陽性率, colour = "移動平均（過去7日間）"))
+         + scale_color_manual(name = "", values = c("移動平均（過去7日間）" = gray(0, 0.4), "検査陽性率"="#FFFFFF00"))
+         + theme(legend.position="top")
+         + labs(x = NULL, y = NULL)) %>% layout(legend = list(orientation = "v", x = 0, y = 1))
+```
+
+
+患者数等の推移
+=====================================
+
+Column {.tabset}
+--------------------------------------------------------------------------------
+
+### 陽性確定日によるエピカーブ
+
+```{r}
+ggplotly(ggplot(publication, aes(x = 日付, y = 陽性確定日ベース新規患者数, colour = "陽性患者数"))
+         + geom_bar(stat = "identity", fill = "orange")
+         + scale_x_date(date_breaks = "1 months", date_labels = "%B")
+         + geom_line(mapping = aes(x = 日付, y = 移動平均_陽性確定日ベース新規患者数, colour = "移動平均（過去7日間）"))
+         + scale_color_manual(name = "", values = c("移動平均（過去7日間）" = gray(0, 0.4), 陽性患者数="#FFFFFF00"))
+         + theme(legend.position="top")
+         + labs(x = NULL, y = NULL)) %>% layout(legend = list(orientation = "v", x = 0, y = 1))
+```
+
+
+### 発症日によるエピカーブ
+
+```{r}
+ggplotly(ggplot(publication, aes(x = 日付, y = 発症日ベース新規患者数, colour = "陽性患者数"))
+         + geom_bar(stat = "identity", fill = "orange")
+         + scale_x_date(date_breaks = "1 months", date_labels = "%B")
+         + scale_color_manual(name = "", values = c("移動平均（過去7日間）" = gray(0, 0.4), 陽性患者数="#FFFFFF00"))
+         + theme(legend.position="top")
+         + labs(x = NULL, y = NULL)) %>% layout(legend = list(orientation = "v", x = 0, y = 1))
+```
+
+### 注意
+
+* 陽性確定から公表まで日数がかかるため、直近の患者数は少なく計算されます。
+* 発症から検査による陽性確定まで日数がかかるため、直近の患者数は少なく計算されます。
+
+
+Column
+--------------------------------------------------------------------------------
+
+### 陽性患者の累計
+
+```{r}
+ggplotly(ggplot(publication, aes(x = 日付, y = 累計_新規陽性患者数, colour = "陽性患者数累計"))
+         + geom_bar(stat = "identity", fill = "orange")
+         + scale_x_date(date_breaks = "1 months", date_labels = "%B")
+         + scale_color_manual(name = "", values = c(陽性患者数累計="#FFFFFF00"))
+         + theme(legend.position="top")
+         + labs(x = NULL, y = NULL)) %>% layout(legend = list(orientation = "v", x = 0, y = 1))
+```
+
+
+Column
+--------------------------------------------------------------------------------
+
+### 入院・入所中（調整中含む）
+
+```{r}
+ggplotly(ggplot(publication, aes(x = 日付, y = 入院入所者数, colour = "入院・入所者数"))
+         + geom_bar(stat = "identity", fill = "orange")
+         + scale_x_date(date_breaks = "1 months", date_labels = "%B")
+         + geom_line(mapping = aes(x = 日付, y = 移動平均_入院入所者数, colour = "移動平均（過去7日間）"))
+         + scale_color_manual(name = "", values = c("移動平均（過去7日間）" = gray(0, 0.4), "入院・入所者数"="#FFFFFF00"))
+         + theme(legend.position="top")
+         + labs(x = NULL, y = NULL)) %>% layout(legend = list(orientation = "v", x = 0, y = 1))
+```
+
+
+直近一週間の陽性患者属性
+=====================================
+
+Column
+--------------------------------------------------------------------------------
+
+### 年代別内訳
+
+```{r}
+knitr::kable(table(nagoya$年代[nagoya$発表日 > Sys.Date() - 6]))
+```
+
+### 陽性判明時点の症状別患者数
+
+```{r}
+knitr::kable(table(nagoya$症状[nagoya$発表日 > Sys.Date() - 6]))
+```
+
+Column
+--------------------------------------------------------------------------------
+
+### 発症から陽性確定までの日数
+
+
+
+当サイトについて
+====================================
+
+Column
+--------------------------------------------------------------------------------
+
+### 
+
+当サイトは新型コロナウイルス感染症（COVID-19）に関する最新情報を提供するために、名古屋市内外の有志が開設したものです。
+
+名古屋市による公式情報と客観的な数値をわかりやすく伝えることで、名古屋市にお住まいの方や、名古屋市内に拠点を持つ企業の方、名古屋市を訪れる方が、現状を把握して適切な対策を取れるようにすることを目的としています。
+
+
+Column
+--------------------------------------------------------------------------------
+
+### ブラウザ環境について
+
+当サイトは以下の環境でご覧いただくことを推奨いたします。
+
+ * Microsoft Edge 最新版
+ * Mozilla Firefox 最新版
+ * Google Chrome 最新版 (Windows 10以上)
+ * Safari (macOS) 最新版
+ * Opera 最新版
+
+推奨環境以外で利用された場合や、推奨環境下でもご利用のブラウザの設定等によっては、正しく表示されない場合がありますのでご了承ください。
+
+
+Column
+--------------------------------------------------------------------------------
+
+### 免責事項
+
+当サイトに掲載されている情報の正確性については万全を期していますが、利用者が当サイトの情報を用いて行う一切の行為について責任を負うものではありません。
+
+また、利用者が当サイトを利用したことにより発生した利用者の損害及び利用者が第三者に与えた損害に対して、責任を負うものではありません。
+
+当サイトに掲載されている情報は、予告なしに変更又は削除することがあります。
+
+
+リンク
+======================================
+
+ * [名古屋市新型コロナウイルスに関連する肺炎について](http://www.city.nagoya.jp/kenkofukushi/page/0000124556.html)
+ * [名古屋市新型コロナウイルス感染症対策特設サイト](https://nagoya-bousai.maps.arcgis.com/apps/Cascade/index.html?appid=04c0250edfe54ae4af7f1c8755d275b5)
+ * [愛知県新型コロナウイルス感染症対策サイト](https://www.pref.aichi.jp/site/covid19-aichi/)
