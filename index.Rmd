@@ -10,18 +10,20 @@ output:
 library(flexdashboard)
 library(readr)
 library(plotly)
-nagoya_city_covid19 <- read_csv("data/nagoya/nagoya_city_covid19(20200806).csv", 
+nagoya_city_covid19 <- read_csv("data/nagoya/nagoya_city_covid19(20200807).csv", 
     locale = locale(encoding = "SHIFT-JIS"))
 nagoya_city_covid19$日付 <- as.Date(nagoya_city_covid19$日付)
 nagoya_city_covid19 <- nagoya_city_covid19[nrow(nagoya_city_covid19):1,]
 colnames(nagoya_city_covid19) <- c("日付", "新規陽性患者数", "感染経路判明", "感染経路不明", "退院回復者数", "死亡者数", "検査実施人数")
+
+process_date <- as.Date("2020-8-7")
 
 nagoya <- read_csv("data/nagoya.csv")
 nagoya$発症日 <- as.Date(nagoya$発症日)
 nagoya$陽性確定日 <- as.Date(nagoya$陽性確定日)
 nagoya$発表日 <- as.Date(nagoya$発表日)
 
-days <- seq(as.Date("2020-2-1"), as.Date("2020-8-6"), by = "day")
+days <- seq(as.Date("2020-2-1"), process_date, by = "day")
 publication <- data.frame(日付 = days)
 publication <- merge(publication, nagoya_city_covid19, by = "日付", all = TRUE)
 publication[is.na(publication)] <- 0
@@ -158,7 +160,7 @@ ggplotly(ggplot(publication, aes(x = 日付, y = 陽性率, colour = "検査陽�
 Column {.tabset}
 --------------------------------------------------------------------------------
 
-### 陽性確定日によるエピカーブ
+### 陽性確定日による新規陽性患者数推移
 
 ```{r}
 ggplotly(ggplot(publication, aes(x = 日付, y = 陽性確定日ベース新規患者数, colour = "陽性患者数"))
@@ -229,9 +231,9 @@ Column
 ### 年代別内訳
 
 ```{r}
-pop <- as.vector(table(c(seq(0,90,10), nagoya$年代[nagoya$発表日 > Sys.Date() - 7]))) - 1
-pop_m <- as.vector(table(c(seq(0,90,10), nagoya$年代[nagoya$性別 == "男性" & nagoya$発表日 > Sys.Date() - 7]))) - 1
-pop_f <- as.vector(table(c(seq(0,90,10), nagoya$年代[nagoya$性別 == "女性" & nagoya$発表日 > Sys.Date() - 7]))) - 1
+pop <- as.vector(table(c(seq(0,90,10), nagoya$年代[nagoya$発表日 > process_date - 7]))) - 1
+pop_m <- as.vector(table(c(seq(0,90,10), nagoya$年代[nagoya$性別 == "男性" & nagoya$発表日 > process_date - 7]))) - 1
+pop_f <- as.vector(table(c(seq(0,90,10), nagoya$年代[nagoya$性別 == "女性" & nagoya$発表日 > process_date - 7]))) - 1
 prop <- pop / sum(pop) * 100
 age <- data.frame(年代 = c("10歳未満", "10歳代", "20歳代", "30歳代", "40歳代", "50歳代", "60歳代", "70歳代", "80歳代", "90歳以上"),
                   男性 = pop_f,
@@ -244,7 +246,33 @@ knitr::kable(age, digits = 1, col.names = c("年代", "男性", "女性", "総�
 ### 陽性判明時点の症状別患者数
 
 ```{r}
-knitr::kable(table(nagoya$症状[nagoya$発表日 > Sys.Date() - 7]))
+symptom <- data.frame(症状 = c("無症状", "軽症", "中等症", "重症", "調査中"))
+symptom$Age0 <- c(sum(nagoya$症状[nagoya$年代 <= 10 & nagoya$発表日 > process_date - 7] == "なし"),
+                  sum(nagoya$症状[nagoya$年代 <= 10 & nagoya$発表日 > process_date - 7] == "軽症"),
+                  sum(nagoya$症状[nagoya$年代 <= 10 & nagoya$発表日 > process_date - 7] == "中等症"),
+                  sum(nagoya$症状[nagoya$年代 <= 10 & nagoya$発表日 > process_date - 7] == "重症"),
+                  sum(nagoya$症状[nagoya$年代 <= 10 & nagoya$発表日 > process_date - 7] == "調査中"))
+symptom$Age20 <- c(sum(nagoya$症状[nagoya$年代 >= 20 & nagoya$年代 <= 30 & nagoya$発表日 > process_date - 7] == "なし"),
+                  sum(nagoya$症状[nagoya$年代 >= 20 & nagoya$年代 <= 30 & nagoya$発表日 > process_date - 7] == "軽症"),
+                  sum(nagoya$症状[nagoya$年代 >= 20 & nagoya$年代 <= 30 & nagoya$発表日 > process_date - 7] == "中等症"),
+                  sum(nagoya$症状[nagoya$年代 >= 20 & nagoya$年代 <= 30 & nagoya$発表日 > process_date - 7] == "重症"),
+                  sum(nagoya$症状[nagoya$年代 >= 20 & nagoya$年代 <= 30 & nagoya$発表日 > process_date - 7] == "調査中"))
+symptom$Age40 <- c(sum(nagoya$症状[nagoya$年代 >= 40 & nagoya$年代 <= 50 & nagoya$発表日 > process_date - 7] == "なし"),
+                  sum(nagoya$症状[nagoya$年代 >= 40 & nagoya$年代 <= 50 & nagoya$発表日 > process_date - 7] == "軽症"),
+                  sum(nagoya$症状[nagoya$年代 >= 40 & nagoya$年代 <= 50 & nagoya$発表日 > process_date - 7] == "中等症"),
+                  sum(nagoya$症状[nagoya$年代 >= 40 & nagoya$年代 <= 50 & nagoya$発表日 > process_date - 7] == "重症"),
+                  sum(nagoya$症状[nagoya$年代 >= 40 & nagoya$年代 <= 50 & nagoya$発表日 > process_date - 7] == "調査中"))
+symptom$Age60 <- c(sum(nagoya$症状[nagoya$年代 >= 60 & nagoya$年代 <= 70 & nagoya$発表日 > process_date - 7] == "なし"),
+                  sum(nagoya$症状[nagoya$年代 >= 60 & nagoya$年代 <= 70 & nagoya$発表日 > process_date - 7] == "軽症"),
+                  sum(nagoya$症状[nagoya$年代 >= 60 & nagoya$年代 <= 70 & nagoya$発表日 > process_date - 7] == "中等症"),
+                  sum(nagoya$症状[nagoya$年代 >= 60 & nagoya$年代 <= 70 & nagoya$発表日 > process_date - 7] == "重症"),
+                  sum(nagoya$症状[nagoya$年代 >= 60 & nagoya$年代 <= 70 & nagoya$発表日 > process_date - 7] == "調査中"))
+symptom$Age80 <- c(sum(nagoya$症状[nagoya$年代 >= 80 & nagoya$年代 <= 90 & nagoya$発表日 > process_date - 7] == "なし"),
+                  sum(nagoya$症状[nagoya$年代 >= 80 & nagoya$年代 <= 90 & nagoya$発表日 > process_date - 7] == "軽症"),
+                  sum(nagoya$症状[nagoya$年代 >= 80 & nagoya$年代 <= 90 & nagoya$発表日 > process_date - 7] == "中等症"),
+                  sum(nagoya$症状[nagoya$年代 >= 80 & nagoya$年代 <= 90 & nagoya$発表日 > process_date - 7] == "重症"),
+                  sum(nagoya$症状[nagoya$年代 >= 80 & nagoya$年代 <= 90 & nagoya$発表日 > process_date - 7] == "調査中"))
+knitr::kable(symptom, col.names = c("症状", "20歳未満", "20-30歳代", "40-50歳代", "60-70歳代", "80歳以上"))
 ```
 
 Column
