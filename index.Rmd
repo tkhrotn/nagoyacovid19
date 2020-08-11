@@ -14,6 +14,7 @@ library(flexdashboard)
 library(readr)
 library(plotly)
 library(reshape2)
+library(formattable)
 
 process_date <- as.Date("2020-8-10")
 
@@ -139,8 +140,9 @@ age <- data.frame(年代 = c("10歳未満", "10歳代", "20歳代", "30歳代", 
                   男性 = pop_f,
                   女性 = pop_m,
                   総数 = pop,
-                  割合 = prop)
-knitr::kable(age, digits = 1, col.names = c("年代", "男性", "女性", "総数", "割合(%)"))
+                  割合 = round(prop, digits = 1))
+#knitr::kable(age, digits = 1, col.names = c("年代", "男性", "女性", "総数", "割合()"))
+formattable(age, list(割合 = color_bar(color = "pink")), col.names = c("年代", "男性", "女性", "総数", "割合(%)"))
 ```
 
 ### 陽性判明時点の症状別患者数（直近一週間）
