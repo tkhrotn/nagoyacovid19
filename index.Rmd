@@ -214,6 +214,7 @@ ggplotly(ggplot(publication, aes(x = 日付, y = 陽性確定日ベース新規�
 ggplotly(ggplot(publication, aes(x = 日付, y = 発症日ベース新規患者数, colour = "陽性患者数"))
          + geom_bar(stat = "identity", fill = "orange")
          + scale_x_date(date_breaks = "1 months", date_labels = "%B")
+         + geom_line(mapping = aes(x = 日付, y = 移動平均_発症日ベース新規患者数, colour = "移動平均（過去7日間）"))
          + scale_color_manual(name = "", values = c("移動平均（過去7日間）" = gray(0, 0.4), 陽性患者数="#FFFFFF00"))
          + theme(legend.position="top")
          + labs(x = NULL, y = NULL)) %>% layout(legend = list(orientation = "v", x = 0, y = 1))
