@@ -60,7 +60,7 @@ parseNagoyaCOVID19v2 <- function(filename) {
                        陽性確定日 = retval[,7],
                        発表日 = rep(published, nrow(retval)))
   
-  retval$発症日 <- sapply(retval$発症日, function(x) {
+  retval$発症日 <- sapply(as.character(retval$発症日), function(x) {
     if (is.na(x) | x == "―") {
       return(NA)
     } else if (x == "調査中") {
@@ -72,7 +72,7 @@ parseNagoyaCOVID19v2 <- function(filename) {
     paste0("2020-", month, "-", day)
   })
 
-  retval$陽性確定日 <- sapply(retval$陽性確定日, function(x) {
+  retval$陽性確定日 <- sapply(as.character(retval$陽性確定日), function(x) {
     if (is.na(x) | x == "―") {
       return(NA)
     } else if (x == "調査中") {

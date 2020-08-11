@@ -1,6 +1,4 @@
 library(readr)
-library(readxl)
-library(tableone)
 library(lubridate)
 library(dplyr)
 
@@ -125,4 +123,4 @@ output$発表日 <- gsub("７", "7", output$発表日)
 output$発表日 <- gsub("８", "8", output$発表日)
 output$発表日 <- gsub("９", "9", output$発表日)
 
-write.csv(output, file = "data/nagoya.csv", row.names = F)
+write.csv(output, file = "data/nagoya.csv", row.names = F, fileEncoding = "UTF-8")

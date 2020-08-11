@@ -13,6 +13,7 @@ output:
 library(flexdashboard)
 library(readr)
 library(plotly)
+library(reshape2)
 
 process_date <- as.Date("2020-8-10")
 
@@ -110,11 +111,15 @@ Column
 ### 新規陽性患者数（公表日に基づく）
 
 ```{r}
-ggplotly(ggplot(publication, aes(x = 日付, y = 新規陽性患者数, colour = "陽性患者数"))
-         + geom_bar(stat = "identity", fill = "orange")
+positive <- melt(publication[,c("日付", "感染経路判明", "感染経路不明")], id.vars = "日付")
+cols_color <- c("感染経路判明"="#FFFFFF00", "感染経路不明"="#FFFFFF00", "移動平均（過去7日間）" = gray(0, 0.4))
+cols_fill <- c("感染経路判明"="#8888FF", "感染経路不明"="#FF8888", "移動平均（過去7日間）" = gray(0, 0.4))
+ggplotly(ggplot(positive, aes(x = 日付, y = value, colour = variable, fill = variable))
+         + geom_bar(stat = "identity")
          + scale_x_date(date_breaks = "1 months", date_labels = "%B")
-         + geom_line(mapping = aes(x = 日付, y = 移動平均_新規陽性患者数, colour = "移動平均（過去7日間）"))
-         + scale_color_manual(name = "", values = c("移動平均（過去7日間）" = gray(0, 0.4), 陽性患者数="#FFFFFF00"))
+         + geom_line(data = publication, mapping = aes(x = 日付, y = 移動平均_新規陽性患者数, colour = "移動平均（過去7日間）", fill = "移動平均（過去7日間）"), stat = "identity", position = "identity")
+         + scale_color_manual(name = "", values = cols_color)
+         + scale_fill_manual(name = "", values = cols_fill)
          + theme(legend.position="top")
          + labs(x = NULL, y = NULL)) %>% layout(legend = list(orientation = "v", x = 0, y = 1))
 ```
@@ -177,7 +182,20 @@ knitr::kable(symptom, col.names = c("症状", "20歳未満", "20-30歳代", "40-
 Column {.tabset}
 --------------------------------------------------------------------------------
 
-### 陽性確定日によるエピカーブ
+### 公表日に基づく陽性患者数
+
+```{r}
+ggplotly(ggplot(publication, aes(x = 日付, y = 新規陽性患者数, colour = "陽性患者数"))
+         + geom_bar(stat = "identity", fill = "orange")
+         + scale_x_date(date_breaks = "1 months", date_labels = "%B")
+         + geom_line(mapping = aes(x = 日付, y = 移動平均_新規陽性患者数, colour = "移動平均（過去7日間）"))
+         + scale_color_manual(name = "", values = c("移動平均（過去7日間）" = gray(0, 0.4), 陽性患者数="#FFFFFF00"))
+         + theme(legend.position="top")
+         + labs(x = NULL, y = NULL)) %>% layout(legend = list(orientation = "v", x = 0, y = 1))
+```
+
+
+### 陽性確定日に基づく陽性患者数
 
 ```{r}
 ggplotly(ggplot(publication, aes(x = 日付, y = 陽性確定日ベース新規患者数, colour = "陽性患者数"))
@@ -215,9 +233,15 @@ ggplotly(ggplot(publication, aes(x = 日付, y = 累計_新規陽性患者数, c
 
 ### 注意
 
-* 陽性確定から公表まで日数がかかるため、直近の患者数は少なく計算されます。
-* 発症から検査による陽性確定まで日数がかかるため、直近の患者数は少なく計算されます。
-* 発症日によるエピカーブでは無症状の患者を計上していないため、総数は少なくなっています。
+#### 陽性確定日に基づく患者数について
+
+* PCR等検査による陽性確定から公表までに日数がかかるため、直近の患者数は少なく計算されます。
+
+
+#### エピカーブについて
+
+* 発症から検査による陽性確定、公表までに日数がかかるため、直近の患者数は少なく計算されます。
+* 無症状の患者を計上していないため、総数は少なくなっています。
 
 
 Column {.tabset}
