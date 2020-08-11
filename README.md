@@ -1,37 +1,16 @@
-## Welcome to GitHub Pages
+## 名古屋市COVID19情報（非公式）
 
-You can use the [editor on GitHub](https://github.com/tkhrotn/nagoyacovid19/edit/master/README.md) to maintain and preview the content for your website in Markdown files.
+https://tkhrotn.github.io/nagoyacovid19/
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
+当サイトは新型コロナウイルス感染症（COVID-19）に関する最新情報を提供するために、名古屋市内外の有志が開設したものです。
 
-### Markdown
+名古屋市による公式情報と客観的な数値をわかりやすく伝えることで、名古屋市にお住まいの方や、名古屋市内に拠点を持つ企業の方、名古屋市を訪れる方が、現状を把握して適切な対策を取れるようにすることを目的としています。
 
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
 
-```markdown
-Syntax highlighted code block
+### 免責事項
 
-# Header 1
-## Header 2
-### Header 3
+当サイトに掲載されている情報の正確性については万全を期していますが、利用者が当サイトの情報を用いて行う一切の行為について責任を負うものではありません。
 
-- Bulleted
-- List
+また、利用者が当サイトを利用したことにより発生した利用者の損害及び利用者が第三者に与えた損害に対して、責任を負うものではありません。
 
-1. Numbered
-2. List
-
-**Bold** and _Italic_ and `Code` text
-
-[Link](url) and ![Image](src)
-```
-
-For more details see [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
-
-### Jekyll Themes
-
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/tkhrotn/nagoyacovid19/settings). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
-
-### Support or Contact
-
-Having trouble with Pages? Check out our [documentation](https://docs.github.com/categories/github-pages-basics/) or [contact support](https://github.com/contact) and we’ll help you sort it out.
+当サイトに掲載されている情報は、予告なしに変更又は削除することがあります。
