@@ -6,7 +6,7 @@ output:
     vertical_layout: fill
     theme: bootstrap
     navbar:
-      - {title: "2020年8月10日更新"}
+      - {title: "2020年8月11日更新"}
 ---
 
 ```{r setup, include=FALSE}
@@ -16,11 +16,9 @@ library(plotly)
 library(reshape2)
 library(formattable)
 
-process_date <- as.Date("2020-8-10")
+process_date <- as.Date("2020-8-11")
 
-population <- 2330048 # 2020/7/1
-
-nagoya_city_covid19 <- read_csv("nagoya_city_covid19(20200810).csv", 
+nagoya_city_covid19 <- read_csv("nagoya_city_covid19(20200811).csv", 
     locale = locale(encoding = "SHIFT-JIS"))
 
 nagoya_city_covid19$日付 <- as.Date(nagoya_city_covid19$日付)
@@ -133,9 +131,18 @@ Column
 ### 年代別内訳（直近一週間）
 
 ```{r}
-pop <- as.vector(table(c(seq(0,90,10), nagoya$年代[nagoya$発表日 > process_date - 7]))) - 1
-pop_m <- as.vector(table(c(seq(0,90,10), nagoya$年代[nagoya$性別 == "男性" & nagoya$発表日 > process_date - 7]))) - 1
-pop_f <- as.vector(table(c(seq(0,90,10), nagoya$年代[nagoya$性別 == "女性" & nagoya$発表日 > process_date - 7]))) - 1
+pop <- as.vector(table(c(seq(0,100,10), nagoya$年代[nagoya$発表日 > process_date - 7]))) - 1
+pop_m <- as.vector(table(c(seq(0,100,10), nagoya$年代[nagoya$性別 == "男性" & nagoya$発表日 > process_date - 7]))) - 1
+pop_f <- as.vector(table(c(seq(0,100,10), nagoya$年代[nagoya$性別 == "女性" & nagoya$発表日 > process_date - 7]))) - 1
+
+pop[10] <- pop[10] + pop[11]
+pop_f[10] <- pop_f[10] + pop_f[11]
+pop_m[10] <- pop_m[10] + pop_m[11]
+
+pop <- pop[1:10]
+pop_f <- pop_f[1:10]
+pop_m <- pop_m[1:10]
+
 prop <- pop / sum(pop) * 100
 age <- data.frame(年代 = c("10歳未満", "10歳代", "20歳代", "30歳代", "40歳代", "50歳代", "60歳代", "70歳代", "80歳代", "90歳以上"),
                   男性 = pop_f,
