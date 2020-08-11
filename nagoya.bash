@@ -11,7 +11,6 @@ cd ..
 
 cd data/nagoya
 
-wget -r -l 1 -A csv -nd -nc http://www.city.nagoya.jp/kenkofukushi/page/0000126920.html
 wget -r -l 1 -A pdf -nd -nc http://www.city.nagoya.jp/kenkofukushi/page/0000126920.html
 
 rm symptom.txt
@@ -96,3 +95,5 @@ mv *.csv ../../csv
 
 
 cd ../..
+
+Rscript makeNagoyaCOVIDCSV.R
