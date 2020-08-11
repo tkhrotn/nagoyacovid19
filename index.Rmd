@@ -48,6 +48,7 @@ publication$移動平均_退院回復者数 <- stats::filter(publication$退院�
 publication$移動平均_検査実施人数 <- stats::filter(publication$検査実施人数, c(1,1,1,1,1,1,1), sides = 1) / 7
 publication$移動平均_入院入所者数 <- stats::filter(publication$入院入所者数, c(1,1,1,1,1,1,1), sides = 1) / 7
 publication$移動平均_陽性率 <- stats::filter(publication$陽性率, c(1,1,1,1,1,1,1), sides = 1) / 7
+publication$移動平均_累計患者数 <- stats::filter(publication$累計_新規陽性患者数, c(1,1,1,1,1,1,1), sides = 1) / 7
 publication[is.na(publication)] <- 0
 
 count <- numeric()
@@ -228,7 +229,8 @@ ggplotly(ggplot(publication, aes(x = 日付, y = 発症日ベース新規患者�
 ggplotly(ggplot(publication, aes(x = 日付, y = 累計_新規陽性患者数, colour = "陽性患者数累計"))
          + geom_bar(stat = "identity", fill = "orange")
          + scale_x_date(date_breaks = "1 months", date_labels = "%B")
-         + scale_color_manual(name = "", values = c(陽性患者数累計="#FFFFFF00"))
+         + geom_line(mapping = aes(x = 日付, y = 移動平均_累計患者数, colour = "移動平均（過去7日間）"))
+         + scale_color_manual(name = "", values = c("移動平均（過去7日間）" = gray(0, 0.4), 陽性患者数累計数="#FFFFFF00"))
          + theme(legend.position="top")
          + labs(x = NULL, y = NULL)) %>% layout(legend = list(orientation = "v", x = 0, y = 1))
 ```
