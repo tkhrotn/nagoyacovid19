@@ -99,7 +99,7 @@ death <- sum(nagoya_city_covid19$死亡者数)
 valueBox(death, color = "gray")
 ```
 
-Column {data-height=400}
+Column {data-height=300}
 --------------------------------------------------------------------------------
 
 ### 新規陽性患者数（公表日に基づく）
