@@ -143,7 +143,6 @@ age <- data.frame(年代 = c("10歳未満", "10歳代", "20歳代", "30歳代", 
                   女性 = pop_m,
                   総数 = pop,
                   割合 = round(prop, digits = 1))
-#knitr::kable(age, digits = 1, col.names = c("年代", "男性", "女性", "総数", "割合()"))
 formattable(age, list(割合 = color_bar(color = "pink")), col.names = c("年代", "男性", "女性", "総数", "割合(%)"))
 ```
 
@@ -176,7 +175,13 @@ symptom$Age80 <- c(sum(nagoya$症状[nagoya$年代 >= 80 & nagoya$年代 <= 90 &
                   sum(nagoya$症状[nagoya$年代 >= 80 & nagoya$年代 <= 90 & nagoya$発表日 > process_date - 7] == "中等症"),
                   sum(nagoya$症状[nagoya$年代 >= 80 & nagoya$年代 <= 90 & nagoya$発表日 > process_date - 7] == "重症"),
                   sum(nagoya$症状[nagoya$年代 >= 80 & nagoya$年代 <= 90 & nagoya$発表日 > process_date - 7] == "調査中"))
-knitr::kable(symptom, col.names = c("症状", "20歳未満", "20-30歳代", "40-50歳代", "60-70歳代", "80歳以上"))
+
+symptom$Age0 <- sprintf("%d<br>(%3.1f)", symptom$Age0, round(100 * symptom$Age0 / sum(symptom$Age0)))
+symptom$Age20 <- sprintf("%d<br>(%3.1f)", symptom$Age20, round(100 * symptom$Age20 / sum(symptom$Age20)))
+symptom$Age40 <- sprintf("%d<br>(%3.1f)", symptom$Age40, round(100 * symptom$Age40 / sum(symptom$Age40)))
+symptom$Age60 <- sprintf("%d<br>(%3.1f)", symptom$Age60, round(100 * symptom$Age60 / sum(symptom$Age60)))
+symptom$Age80 <- sprintf("%d<br>(%3.1f)", symptom$Age80, round(100 * symptom$Age80 / sum(symptom$Age80)))
+formattable(symptom, col.names = c("症状", "20歳未満<br>(%)", "20-30歳代<br>(%)", "40-50歳代<br>(%)", "60-70歳代<br>(%)", "80歳以上<br>(%)"))
 ```
 
 Column {data-height=10}
