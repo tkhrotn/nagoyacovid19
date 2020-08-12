@@ -6,7 +6,7 @@ output:
     vertical_layout: fill
     theme: bootstrap
     navbar:
-      - {title: "2020年8月11日更新"}
+      - {title: "2020年8月12日更新"}
 ---
 
 ```{r setup, include=FALSE}
@@ -16,9 +16,9 @@ library(plotly)
 library(reshape2)
 library(formattable)
 
-process_date <- as.Date("2020-8-11")
+process_date <- as.Date("2020-8-12")
 
-nagoya_city_covid19 <- read_csv("nagoya_city_covid19(20200811).csv", 
+nagoya_city_covid19 <- read_csv("nagoya_city_covid19(20200812).csv", 
     locale = locale(encoding = "SHIFT-JIS"))
 
 nagoya_city_covid19$日付 <- as.Date(nagoya_city_covid19$日付)
