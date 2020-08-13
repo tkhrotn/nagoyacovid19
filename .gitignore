@@ -41,3 +41,6 @@ vignettes/*.pdf
 # data directory
 /data/
 /csv/
+
+# Nagoya city open data
+nagoya_city_covid19*
