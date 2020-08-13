@@ -1,5 +1,5 @@
 ---
-title: "名古屋市COVID19情報（非公式）"
+title: "名古屋市COVID19情報 (非公式)"
 output: 
   flexdashboard::flex_dashboard:
     orientation: row
