@@ -365,6 +365,14 @@ Column
 リンク
 ======================================
 
- * [名古屋市新型コロナウイルスに関連する肺炎について](http://www.city.nagoya.jp/kenkofukushi/page/0000124556.html)
+#### 名古屋市の情報
+
+ * [名古屋市：新型コロナウイルスに関連する肺炎について (公式)](http://www.city.nagoya.jp/kenkofukushi/page/0000124556.html)
  * [名古屋市新型コロナウイルス感染症対策特設サイト](https://nagoya-bousai.maps.arcgis.com/apps/Cascade/index.html?appid=04c0250edfe54ae4af7f1c8755d275b5)
- * [愛知県新型コロナウイルス感染症対策サイト](https://www.pref.aichi.jp/site/covid19-aichi/)
+
+
+#### 愛知県の情報
+
+ * [愛知県新型コロナウイルス感染症対策サイト (公式)](https://www.pref.aichi.jp/site/covid19-aichi/)
+ * [新型コロナウイルス感染症対策サイト (非公式)](https://stopcovid19.code4.nagoya/)
+ 
