@@ -6,7 +6,7 @@ output:
     vertical_layout: fill
     theme: bootstrap
     navbar:
-      - {title: "2020年8月15日更新"}
+      - {title: "2020年8月16日更新"}
 ---
 
 ```{r setup, include=FALSE}
@@ -16,9 +16,9 @@ library(plotly)
 library(reshape2)
 library(formattable)
 
-process_date <- as.Date("2020-8-15")
+process_date <- as.Date("2020-8-16")
 
-nagoya_city_covid19 <- read_csv("nagoya_city_covid19(20200815).csv", 
+nagoya_city_covid19 <- read_csv("nagoya_city_covid19(20200816).csv", 
     locale = locale(encoding = "SHIFT-JIS"))
 
 nagoya_city_covid19$日付 <- as.Date(nagoya_city_covid19$日付)
@@ -176,11 +176,11 @@ symptom$Age80 <- c(sum(nagoya$症状[nagoya$年代 >= 80 & nagoya$年代 <= 90 &
                   sum(nagoya$症状[nagoya$年代 >= 80 & nagoya$年代 <= 90 & nagoya$発表日 > process_date - 7] == "重症"),
                   sum(nagoya$症状[nagoya$年代 >= 80 & nagoya$年代 <= 90 & nagoya$発表日 > process_date - 7] == "調査中"))
 
-symptom$Age0 <- sprintf("%d<br>(%3.1f)", symptom$Age0, round(100 * symptom$Age0 / sum(symptom$Age0)))
-symptom$Age20 <- sprintf("%d<br>(%3.1f)", symptom$Age20, round(100 * symptom$Age20 / sum(symptom$Age20)))
-symptom$Age40 <- sprintf("%d<br>(%3.1f)", symptom$Age40, round(100 * symptom$Age40 / sum(symptom$Age40)))
-symptom$Age60 <- sprintf("%d<br>(%3.1f)", symptom$Age60, round(100 * symptom$Age60 / sum(symptom$Age60)))
-symptom$Age80 <- sprintf("%d<br>(%3.1f)", symptom$Age80, round(100 * symptom$Age80 / sum(symptom$Age80)))
+symptom$Age0 <- sprintf("%d<br>(%3.1f)", symptom$Age0, 100 * symptom$Age0 / sum(symptom$Age0))
+symptom$Age20 <- sprintf("%d<br>(%3.1f)", symptom$Age20, 100 * symptom$Age20 / sum(symptom$Age20))
+symptom$Age40 <- sprintf("%d<br>(%3.1f)", symptom$Age40, 100 * symptom$Age40 / sum(symptom$Age40))
+symptom$Age60 <- sprintf("%d<br>(%3.1f)", symptom$Age60, 100 * symptom$Age60 / sum(symptom$Age60))
+symptom$Age80 <- sprintf("%d<br>(%3.1f)", symptom$Age80, 100 * symptom$Age80 / sum(symptom$Age80))
 formattable(symptom, col.names = c("症状", "20歳未満<br>(%)", "20-30歳代<br>(%)", "40-50歳代<br>(%)", "60-70歳代<br>(%)", "80歳以上<br>(%)"))
 ```
 
