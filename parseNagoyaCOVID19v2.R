@@ -20,7 +20,7 @@ parseNagoyaCOVID19v2 <- function(filename) {
     record <- text[i]
     i <- i + 1
     
-    if (text[i] == "10歳") {
+    if (text[i] == "10歳" | text[i] == "10歳未") {
       record <- c(record, "0")
       i <- i + 2
     } else {
