@@ -33,7 +33,7 @@ parseNagoyaCOVID19v2 <- function(filename) {
 
     contact <- ""
     repeat {
-      if (!is.na(suppressWarnings(as.numeric(text[i]))) | i > length(text)) {
+      if (!is.na(suppressWarnings(as.numeric(text[i]))) | i > length(text) | startsWith(text[i], "[参考]")) {
         record <- c(record, contact)
         break
       } else {
@@ -44,7 +44,7 @@ parseNagoyaCOVID19v2 <- function(filename) {
     
     retval <- rbind(retval, record)
     
-    if (i > length(text))
+    if (i > length(text) | startsWith(text[i], "[参考]"))
       break
   }
   

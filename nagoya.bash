@@ -80,11 +80,32 @@ cd ../..
 Rscript makeNagoyaCOVID19Data.R
 mv data/nagoya.csv csv/
 
+
 # 2020/8/8-
 
 cd data/nagoya
 
-files=`ls R208*.pdf | grep -v sibou | grep -v R20801 | grep -v R20802 | grep -v R20803 | grep -v R20804 | grep -v R20805 | grep -v R20806 | grep -v R20807`
+files=`ls R208*.pdf | grep -v sibou | grep -v R20801 | grep -v R20802 | grep -v R20803 | grep -v R20804 | grep -v R20805 | grep -v R20806 | grep -v R20807 | grep -v R20827`
+
+for i in ${files}; do
+    echo ${i}
+    Rscript ../../parseNagoyaCOVID19v2.R "${i}"
+done
+
+echo '"2060",NA,"60","男性",NA,"名古屋市",NA,"死亡","2020-8-6","2020-8-16","2020-8-17"' >> R20817kisyahappyou.csv
+
+mv *.csv ../../csv
+
+cd ../..
+
+cp R20827kisyahappyou.csv csv/
+
+
+# 2020/9/1-
+
+cd data/nagoya
+
+files=`ls R209*.pdf | grep -v sibou`
 
 for i in ${files}; do
     echo ${i}
@@ -93,7 +114,7 @@ done
 
 mv *.csv ../../csv
 
-
 cd ../..
+
 
 Rscript makeNagoyaCOVIDCSV.R
