@@ -6,7 +6,7 @@ output:
     vertical_layout: fill
     theme: bootstrap
     navbar:
-      - {title: "2020年9月6日更新"}
+      - {title: "2020年9月7日更新"}
 ---
 
 ```{r setup, include=FALSE}
@@ -16,9 +16,9 @@ library(plotly)
 library(reshape2)
 library(formattable)
 
-process_date <- as.Date("2020-9-6")
+process_date <- as.Date("2020-9-7")
 
-nagoya_city_covid19 <- read_csv("nagoya_city_covid19(20200906).csv", 
+nagoya_city_covid19 <- read_csv("nagoya_city_covid19(20200907).csv", 
     locale = locale(encoding = "SHIFT-JIS"))
 
 nagoya_city_covid19$日付 <- as.Date(nagoya_city_covid19$日付)
@@ -276,10 +276,26 @@ ggplotly(ggplot(publication, aes(x = 日付, y = 検査実施人数, colour = "�
 ```
 
 
+### 陽性率
+
+```{r}
+ggplotly(ggplot(publication[publication$日付 > as.Date("2020-8-9"),], aes(x = 日付, y = 陽性率, colour = "陽性率"))
+         + geom_bar(stat = "identity", fill = "orange")
+         + scale_x_date(date_breaks = "1 months", date_labels = "%B")
+         + geom_line(mapping = aes(x = 日付, y = 移動平均_陽性率, colour = "移動平均（過去7日間）"))
+         + scale_color_manual(name = "", values = c("移動平均（過去7日間）" = gray(0, 0.4), "陽性率"="#FFFFFF00"))
+         + theme(legend.position="top")
+         + labs(x = NULL, y = NULL)) %>% layout(legend = list(orientation = "v", x = 0, y = 1))
+```
+
 ### 注意
 
+* 掲載している数値については速報値であり、後日修正されることがあります。
 * 検査実施人数は、名古屋市の疑い患者としてPCR検査等を行ったものを掲載しており、名古屋市衛生研究所、名古屋市PCR検査所での実施数のほか、発表時点で名古屋市が把握している他機関の検査数も含みます。（陽性患者の陰性化確認のための検査は除く。）
-* 他機関から陽性事例のみの報告があったものも含まれるため、陽性率算出の際の分母としてはご利用できません。
+* 令和2年8月9日以前の人数は他機関から陽性事例のみの報告があったものも含まれるため、陽性率算出の際の分母としてはご利用できません。
+* 令和2年8月10日以降は、新型コロナウイルス感染症医療機関等情報支援システム（G-MIS）により把握した件数等についても掲載しております。
+* 検査実施件数のうち、診療所における検査については、診療所より1週間分の実績をまとめて報告していただいておりますので、件数の計上は翌週以降になります。
+* 陽性患者数には、再陽性となった患者の件数も含まれています。
 
 
 
