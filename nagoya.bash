@@ -105,7 +105,7 @@ cp R20827kisyahappyou.csv csv/
 
 cd data/nagoya
 
-files=`ls R209*.pdf | grep -v sibou`
+files=`ls R209*.pdf | grep -v sibou | grep -v R20911`
 
 for i in ${files}; do
     echo ${i}
@@ -115,6 +115,8 @@ done
 mv *.csv ../../csv
 
 cd ../..
+
+cp R20911kisyahappyou.csv csv/
 
 
 Rscript makeNagoyaCOVIDCSV.R
