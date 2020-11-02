@@ -1,6 +1,6 @@
 #!/bin/bash
 
-wget -r -l 1 -A csv -nd -nc http://www.city.nagoya.jp/kenkofukushi/page/0000126920.html
+wget -r -l 1 -A csv -nd -nc https://www.city.nagoya.jp/kenkofukushi/page/0000126920.html
 
 cd data/
 rm *.pdf
@@ -11,7 +11,7 @@ cd ..
 
 cd data/nagoya
 
-wget -r -l 1 -A pdf -nd -nc http://www.city.nagoya.jp/kenkofukushi/page/0000126920.html
+wget -r -l 1 -A pdf -nd -nc https://www.city.nagoya.jp/kenkofukushi/page/0000126920.html
 
 rm symptom.txt
 touch symptom.txt
@@ -25,7 +25,7 @@ touch onset.txt
 rm positive.txt
 touch positive.txt
 
-files=`ls *.pdf | grep -v sibo | grep -v R2072 | grep -v R20214kisya.pdf | grep -v R2073 | grep -v R208`
+files=`ls *.pdf | grep -v sibo | grep -v R2072 | grep -v R20214kisya.pdf | grep -v R2073 | grep -v R208 | grep -v R209 | grep -v R210`
 
 for i in ${files}; do
     echo ${i}
@@ -112,11 +112,50 @@ for i in ${files}; do
     Rscript ../../parseNagoyaCOVID19v2.R "${i}"
 done
 
+echo '"2611",NA,"60","男性",NA,"名古屋市",NA,"死亡",NA,"2020-9-10","2020-9-11"' >> R20911kisyahappyou.csv
+
 mv *.csv ../../csv
 
 cd ../..
 
 cp R20911kisyahappyou.csv csv/
+
+
+# 2020/10/1-
+
+cd data/nagoya
+
+files=`ls R210*.pdf | grep -v sibou | grep -v shibou | grep -v R21030`
+
+for i in ${files}; do
+    echo ${i}
+    Rscript ../../parseNagoyaCOVID19v2.R "${i}"
+done
+
+echo "R21030kisyahappyou.pdf"
+Rscript ../../parseNagoyaCOVID19v2_R21030.R "R21030kisyahappyou.pdf"
+
+mv *.csv ../../csv
+
+cd ../..
+
+
+# 2020/11/1-
+
+cd data/nagoya
+
+files=`ls R211*.pdf | grep -v sibou | grep -v shibou`
+
+for i in ${files}; do
+    echo ${i}
+    Rscript ../../parseNagoyaCOVID19v2.R "${i}"
+done
+
+mv *.csv ../../csv
+
+cd ../..
+
+
 
 
 Rscript makeNagoyaCOVIDCSV.R

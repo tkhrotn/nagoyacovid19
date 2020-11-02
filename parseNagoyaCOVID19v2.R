@@ -18,33 +18,56 @@ parseNagoyaCOVID19v2 <- function(filename) {
   
   repeat {
     record <- text[i]
-    i <- i + 1
     
-    if (text[i] == "10歳" | text[i] == "10歳未") {
-      record <- c(record, "0")
-      i <- i + 2
-    } else {
-      record <- c(record, text[i])
+    if (!is.na(suppressWarnings(as.numeric(text[i]))) & as.numeric(text[i]) == 3266) {
+      #record <- c(record, "30", "女", "名古屋市", "なし", "―", "10月28日", "なし", "本市公表3173例目（20歳代女性・10月26日）と接触")
+      record <- c(record, "調査中", "調査中", "名古屋市", "なし", "調査中", "10月28日", "調査中", "")
+      i <- i + 17
+    } else if (!is.na(suppressWarnings(as.numeric(text[i]))) & as.numeric(text[i]) == 3267) {
+      record <- c(record, "30", "女", "名古屋市", "なし", "―", "10月28日", "なし", "本市公表3173例目（20歳代女性・10月26日）と接触")
       i <- i + 1
-    }
-    
-    record <- c(record, text[i:(i+5)])
-    i <- i + 6
-
-    contact <- ""
-    repeat {
-      if (!is.na(suppressWarnings(as.numeric(text[i]))) | i > length(text) | startsWith(text[i], "[参考]")) {
-        record <- c(record, contact)
-        break
-      } else {
-        contact <- paste0(contact, text[i])
+    } else if (!is.na(suppressWarnings(as.numeric(text[i]))) & as.numeric(text[i]) == 3268) {
+      record <- c(record, "調査中", "調査中", "名古屋市", "なし", "調査中", "10月28日", "調査中", "")
+      i <- i + 5
+    } else if (!is.na(suppressWarnings(as.numeric(text[i]))) & as.numeric(text[i]) == 2999) {
+      record <- c(record, "高齢者", "女", "名古屋市", "なし", "―", "10月10日", "死亡", "")
+      i <- i + 8
+    }else {
+      i <- i + 1
+      
+      if (text[i] == "調査中 調査中") {
+        record <- c(record, NA, NA)
         i <- i + 1
+        record <- c(record, text[i:(i+4)])
+        i <- i + 5
+      } else {
+        if (text[i] == "10歳" | text[i] == "10歳未") {
+          record <- c(record, "0")
+          i <- i + 2
+        } else {
+          record <- c(record, text[i])
+          i <- i + 1
+        }
+        
+        record <- c(record, text[i:(i+5)])
+        i <- i + 6
+      }
+      
+      contact <- ""
+      repeat {
+        if (!is.na(suppressWarnings(as.numeric(text[i]))) | i > length(text) | startsWith(text[i], "新規患者の接触歴別内訳") | startsWith(text[i], "[参考]")) {
+          record <- c(record, contact)
+          break
+        } else {
+          contact <- paste0(contact, text[i])
+          i <- i + 1
+        }
       }
     }
     
     retval <- rbind(retval, record)
     
-    if (i > length(text) | startsWith(text[i], "[参考]"))
+    if (i > length(text) | startsWith(text[i], "接触歴") | startsWith(text[i], "新規患者の接触歴別内訳") | startsWith(text[i], "[参考]"))
       break
   }
   
@@ -60,6 +83,41 @@ parseNagoyaCOVID19v2 <- function(filename) {
                        陽性確定日 = retval[,7],
                        発表日 = rep(published, nrow(retval)))
   
+  retval$年代[retval$名古屋市No == 3265] <- 20
+  retval$年代[retval$名古屋市No == 3266] <- 30
+  retval$年代[retval$名古屋市No == 3268] <- 20
+  retval$年代[retval$名古屋市No == 3269] <- 50
+  retval$年代[retval$名古屋市No == 3270] <- 50
+  retval$年代[retval$名古屋市No == 3271] <- 30
+  retval$年代[retval$名古屋市No == 3272] <- 20
+
+  retval$性別[retval$名古屋市No == 3265] <- "女性"
+  retval$性別[retval$名古屋市No == 3266] <- "女性"
+  retval$性別[retval$名古屋市No == 3268] <- "女性"
+  retval$性別[retval$名古屋市No == 3269] <- "女性"
+  retval$性別[retval$名古屋市No == 3270] <- "女性"
+  retval$性別[retval$名古屋市No == 3271] <- "女性"
+  retval$性別[retval$名古屋市No == 3272] <- "女性"
+
+  retval$発症日[retval$名古屋市No == 3265] <- NA
+  retval$発症日[retval$名古屋市No == 3266] <- "10月21日"
+  retval$発症日[retval$名古屋市No == 3268] <- "10月26日"
+  retval$発症日[retval$名古屋市No == 3269] <- "10月24日"
+  retval$発症日[retval$名古屋市No == 3270] <- NA
+  retval$発症日[retval$名古屋市No == 3271] <- NA
+  retval$発症日[retval$名古屋市No == 3272] <- "10月26日"
+
+  retval$症状[retval$名古屋市No == 3265] <- "なし"
+  retval$症状[retval$名古屋市No == 3266] <- "軽症"
+  retval$症状[retval$名古屋市No == 3268] <- "軽症"
+  retval$症状[retval$名古屋市No == 3269] <- "軽症"
+  retval$症状[retval$名古屋市No == 3270] <- "なし"
+  retval$症状[retval$名古屋市No == 3271] <- "なし"
+  retval$症状[retval$名古屋市No == 3272] <- "軽症"
+  
+  retval$海外渡航歴[retval$名古屋市No == 3259] <- "なし"
+  
+    
   retval$発症日 <- sapply(as.character(retval$発症日), function(x) {
     if (is.na(x) | x == "―") {
       return(NA)
@@ -85,6 +143,8 @@ parseNagoyaCOVID19v2 <- function(filename) {
   })
   
   retval$接触状況[retval$接触状況 == ""] <- NA
+  
+  retval$年代[retval$年代 == "" | retval$年代 == "―"] <- NA
   
   return(retval)
 }
