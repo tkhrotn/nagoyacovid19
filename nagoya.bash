@@ -144,7 +144,7 @@ cd ../..
 
 cd data/nagoya
 
-files=`ls R211*.pdf | grep -v sibou | grep -v shibou | grep -v R21110kisyahappyou.pdf | grep -v R21120`
+files=`ls R211*.pdf | grep -v sibou | grep -v shibou | grep -v R21110kisyahappyou.pdf | grep -v R21120 | grep -v R21130`
 
 for i in ${files}; do
     echo ${i}
@@ -157,10 +157,31 @@ Rscript ../../parseNagoyaCOVID19v2_R21110.R "R21110kisyahappyou.pdf"
 echo "R21120kisyahappyou.pdf"
 Rscript ../../parseNagoyaCOVID19v2_R21030.R "R21120kisyahappyou.pdf"
 
+echo "R21130kisyahappyou.pdf"
+Rscript ../../parseNagoyaCOVID19v2_R21030.R "R21130kisyahappyou.pdf"
+
 mv *.csv ../../csv
 
 cd ../..
 
+
+# 2020/12/1-
+
+cd data/nagoya
+
+files=`ls R212*.pdf | grep -v sibou | grep -v shibou | grep -v R21201`
+
+for i in ${files}; do
+    echo ${i}
+    Rscript ../../parseNagoyaCOVID19v2.R "${i}"
+done
+
+echo "R21201kisyahappyou.pdf"
+Rscript ../../parseNagoyaCOVID19v2_R21110.R "R21201kisyahappyou.pdf"
+
+mv *.csv ../../csv
+
+cd ../..
 
 
 
