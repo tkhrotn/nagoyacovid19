@@ -169,7 +169,7 @@ cd ../..
 
 cd data/nagoya
 
-files=`ls R212*.pdf | grep -v sibou | grep -v shibou | grep -v R21201`
+files=`ls R212*.pdf | grep -v sibou | grep -v shibou | grep -v R21201 | grep -v R211210`
 
 for i in ${files}; do
     echo ${i}
@@ -177,7 +177,10 @@ for i in ${files}; do
 done
 
 echo "R21201kisyahappyou.pdf"
-Rscript ../../parseNagoyaCOVID19v2_R21110.R "R21201kisyahappyou.pdf"
+Rscript ../../parseNagoyaCOVID19v2_R21201.R "R21201kisyahappyou.pdf"
+
+echo "R21210kisyahappyou.pdf"
+Rscript ../../parseNagoyaCOVID19v2_R21210.R "R21210kisyahappyou.pdf"
 
 mv *.csv ../../csv
 

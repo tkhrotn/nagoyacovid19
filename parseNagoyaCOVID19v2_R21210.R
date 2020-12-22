@@ -1,6 +1,6 @@
 parseNagoyaCOVID19v2 <- function(filename) {
   published <- "2020-12-10"
-  text <- system(paste0("pdftotext -f 4 -l 8  \"", filename, "\" - | sed -e 's/\\f//g'"), intern = T)
+  text <- system(paste0("pdftotext -f 3  \"", filename, "\" - | sed -e 's/\\f//g'"), intern = T)
   text <- text[text != ""]
   
   i <- 1
